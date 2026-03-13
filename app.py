@@ -114,6 +114,8 @@ class ItemList(MethodView):
         #   Test: {"name": "Ghost", "price": 5, "store_id": 999}
         #         should return 404
         # --------------------------------------------------
+        if not store_exists(item_data["store_id"]):
+            abort(404, message="Store not found.")
 
         # --------------------------------------------------
         # TODO 4: Data Integrity — No duplicate names per store
@@ -130,6 +132,8 @@ class ItemList(MethodView):
         #   Test: Create "Laptop" in store 1, then
         #         create "Laptop" in store 2 → 201 (OK)
         # --------------------------------------------------
+        if duplicate_name_in_store(item_data["name"], item_data["store_id"]):
+            abort(409, message="An item with this name already exists in this store.")
 
         new_item = {
             "id": next_item_id,
@@ -138,6 +142,7 @@ class ItemList(MethodView):
             "discount_price": item_data.get("discount_price"),
             "store_id": item_data["store_id"],
         }
+        
         items.append(new_item)
         next_item_id += 1
 
